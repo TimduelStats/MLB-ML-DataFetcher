@@ -1,0 +1,12 @@
+# .gitignore
+
+# Virtual environment
+venv/
+# json file
+# *.json
+
+node_modules/
+
+__pycache__/
+
+cdk.out/
