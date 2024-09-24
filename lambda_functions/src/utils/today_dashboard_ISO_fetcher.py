@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import os
 
 
-class FangraphsStatsScraper:
+class FangraphsDashboardScraper:
 
     @staticmethod
     def fetch_data(url):
@@ -65,7 +65,7 @@ class FangraphsStatsScraper:
         Parses the data from the Fangraphs website and adds the date.
         Args:
             html_content (str): The HTML content to parse.
-            data_type (str): Type of data to extract (e.g., 'fb' for Fly Ball%).
+            data_type (str): Type of data to extract (e.g., 'iso' for Fly Ball%).
             date (str): The date to add to the data (formatted as YYYY-MM-DD).
         """
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -73,23 +73,22 @@ class FangraphsStatsScraper:
         rows = table_div.find('table').find_all('tr', class_=True)
         data = []
         batter_id = 1  # Start with batter_id 1, increment for each batter
-
         for row in rows:
             columns = row.find_all('td')
             batter_name = columns[1].text.strip()  # Get batter name
             team = columns[2].text.strip()  # Get team name
-            fb = columns[18].text.strip()  # Get Fly Ball percentage (FB%)
-
+            iso = columns[12].text.strip()  # Get Fly Ball percentage (iso%)
+            # remove . from iso
+            iso = iso.replace(".", "")
             # Append the parsed data
             data.append({
                 'batter': batter_name,
-                'fb': fb,
+                'iso': iso,
                 'team': team,
                 'batter_id': batter_id,
                 'date': date  # Add the date
             })
             batter_id += 1  # Increment batter_id for the next batter
-
         return data
 
     @staticmethod
@@ -127,10 +126,10 @@ class FangraphsStatsScraper:
         # Format the dates back to 'YYYY-MM-DD' for URL usage
         start_date_str = start_date_obj.strftime('%Y-%m-%d')
         end_date_str = end_date_obj.strftime('%Y-%m-%d')
-        return f"{base_url}?pos=all&stats=bat&lg=all&qual=y&type=23&season=2024&month=1000&season1=2024&ind=0&startdate={start_date_str}&enddate={end_date_str}&team=0&pagenum=1&pageitems=2000000000"
+        return f"{base_url}?pos=all&stats=bat&lg=all&season=2024&season1=2024&ind=0&team=0&pageitems=2000000000&qual=5&type=8&month=1000&startdate={start_date_str}&enddate={end_date_str}"
 
     @staticmethod
-    def get_batter_fb_for_date(date, file_path="fb_data.csv"):
+    def get_batter_iso_for_date(date, file_path="iso_data.csv"):
         """
         Fetch Fly Ball% for batters on a specific date and add the date to the data.
         Args:
@@ -138,7 +137,7 @@ class FangraphsStatsScraper:
             file_path (str): The file path to save the data.
         """
         base_url = "https://www.fangraphs.com/leaders/major-league"
-        url = FangraphsStatsScraper.generate_url(base_url, date)
+        url = FangraphsDashboardScraper.generate_url(base_url, date)
         print(url)
 
         # Calculate the date 16 days after the input date
@@ -146,34 +145,11 @@ class FangraphsStatsScraper:
         final_date = (date_obj + timedelta(days=15)).strftime('%Y-%m-%d')
 
         # Fetch the data
-        html_content = FangraphsStatsScraper.fetch_data(url)
+        html_content = FangraphsDashboardScraper.fetch_data(url)
         if html_content:
             # Parse and process the Fly Ball% data
-            parsed_data = FangraphsStatsScraper.parse_data(
-                html_content, data_type="fb", date=final_date)
-            FangraphsStatsScraper.save_data(parsed_data, file_path)
+            parsed_data = FangraphsDashboardScraper.parse_data(
+                html_content, data_type="iso", date=final_date)
+            FangraphsDashboardScraper.save_data(parsed_data, file_path)
             return parsed_data
 
-# Function to iterate over a date range and scrape the data
-
-
-def scrape_date_range(start_date_str, end_date_str):
-    """
-    Iterate over a date range from start_date to end_date in increments of 16 days
-    and scrape the Fly Ball% data.
-    Args:
-        start_date_str (str): The start date in 'YYYY-MM-DD' format.
-        end_date_str (str): The end date in 'YYYY-MM-DD' format.
-    """
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
-
-    while start_date <= end_date:
-        scraper = FangraphsStatsScraper()
-        scraper.get_batter_fb_for_date(start_date.strftime('%Y-%m-%d'))
-        start_date += timedelta(days=1)
-
-
-if __name__ == "__main__":
-    # Example usage to run from 2024-03-28 to 2024-08-16
-    scrape_date_range("2024-03-28", "2024-08-16")
