@@ -92,7 +92,7 @@ class FangraphsDashboardScraper:
         return data
 
     @staticmethod
-    def save_data(data, file_path="fb_data.csv"):
+    def save_data(data, file_path="iso_data.csv"):
         """
         Save the data to a CSV file.
         Args:

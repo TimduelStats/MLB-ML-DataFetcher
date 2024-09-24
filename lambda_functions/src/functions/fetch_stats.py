@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     delete_from_s3(BUCKET_NAME, 'today_hh_data.csv');
     delete_from_s3(BUCKET_NAME, 'today_pitcher_data.csv');
 
-    # Get today's date and get today's hh and fb data
+    # Get today's date and get today's hh and iso data
     # Define the EST timezone
     est = pytz.timezone('America/New_York')
 
@@ -31,7 +31,7 @@ def lambda_handler(event, context):
     today = datetime.now(est).strftime('%Y-%m-%d')
     start_date = (datetime.strptime(today, '%Y-%m-%d') - timedelta(days=15)).strftime('%Y-%m-%d')
     # Save csv to /tmp as well
-    FangraphsDashboardScraper.get_batter_fb_for_date(start_date, file_path="/tmp/today_iso_data.csv")
+    FangraphsDashboardScraper.get_batter_iso_for_date(start_date, file_path="/tmp/today_iso_data.csv")
     FangraphsStatcastScraper.get_batter_hh_for_date(start_date, file_path="/tmp/today_hh_data.csv")
     PitcherScraperAPI.scrape_data(str(today), file_path="/tmp/today_pitcher_data.csv")
 
