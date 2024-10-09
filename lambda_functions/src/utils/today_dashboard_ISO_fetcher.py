@@ -17,7 +17,8 @@ class FangraphsDashboardScraper:
     @staticmethod
     def fetch_data(url):
         chrome_options = ChromeOptions()
-        chrome_options.add_argument("--headless=new")
+
+        chrome_options.add_argument("--headless=new")  # Use new headless mode
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
@@ -28,8 +29,9 @@ class FangraphsDashboardScraper:
         chrome_options.add_argument(f"--data-path={mkdtemp()}")
         chrome_options.add_argument(f"--disk-cache-dir={mkdtemp()}")
         chrome_options.add_argument("--remote-debugging-pipe")
+        chrome_options.add_argument("--window-size=1920,1080")  # Set proper window size
         chrome_options.add_argument("--verbose")
-        chrome_options.add_argument("--log-path=/tmp")
+        chrome_options.add_argument("--log-path=/tmp/chrome.log")
         chrome_options.binary_location = "/opt/chrome/chrome-linux64/chrome"
 
         service = ChromeService(

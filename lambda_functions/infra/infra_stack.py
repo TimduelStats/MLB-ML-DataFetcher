@@ -17,7 +17,7 @@ class InfraStack(Stack):
             # Build a Docker image from the Dockerfile located in the ../src directory.
             # Push the built image to Amazon Elastic Container Registry (ECR).
             code=lambda_.DockerImageCode.from_image_asset("../src"),
-            timeout=Duration.seconds(300),
+            timeout=Duration.seconds(480),
             memory_size=3000,
         )
 
