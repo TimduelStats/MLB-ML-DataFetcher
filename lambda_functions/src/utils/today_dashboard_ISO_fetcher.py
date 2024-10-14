@@ -128,7 +128,7 @@ class FangraphsDashboardScraper:
         # Format the dates back to 'YYYY-MM-DD' for URL usage
         start_date_str = start_date_obj.strftime('%Y-%m-%d')
         end_date_str = end_date_obj.strftime('%Y-%m-%d')
-        return f"{base_url}?pos=all&stats=bat&lg=all&season=2024&season1=2024&ind=0&team=0&pageitems=2000000000&qual=5&type=8&month=1000&startdate={start_date_str}&enddate={end_date_str}"
+        return f"{base_url}?pos=all&stats=bat&lg=all&season=2024&season1=2024&ind=0&team=0&pageitems=2000000000&type=8&month=1000&startdate={start_date_str}&enddate={end_date_str}"
 
     @staticmethod
     def get_batter_iso_for_date(date, file_path="iso_data.csv"):
